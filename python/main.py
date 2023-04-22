@@ -82,6 +82,9 @@ def test(color, image, current_image, count, save_image_name=None):
 
     for h in range(0, len(image), 1):
         for w in range(0, len(image[0]), 1):
+            r, g, b = image[h][w]
+            if (r == 255 and g == 255 and b == 255):
+                continue
             d_img = d(image[h][w], color)
             d_curr = d(current_image[h][w], color)
             if (d_img < d_curr):
@@ -106,9 +109,35 @@ def test(color, image, current_image, count, save_image_name=None):
 
 
 def shoot_calc(h, w, image_w, image_h):
+    # 425 = ((ma) ^ 2 * sin(2 *45)) / 9.80665
+    # 425 = (m^2 a^2 * 0.8939966636) / 9.80665
+    # 4167.82625 = m^2 a^2 * 0.8939966636
+    # 4662.015441105501 = m^2 a^2
+
+    # L = 2v₀²sin(α)cos(α) / g
+    # 425 = 2 v^2 * 0.8509035245341184 * 0.5253219888177297 / 9.80665
+    # 4167.82625 = 2 v^2 * 0.8509035245341184 * 0.5253219888177297
+    # 4662.0154411025915 = v^2
+    # 
+    # F = ma = m (v^2 - u^2) / (2s)
+    # F = 1 (v^2) / 2s
+    # F = 4662.0154411025915 / 850
+    # F = 5.48472404835599
+    # 
+    # 
+    # 
+    # s = (v^2 /g) * sin(2 * 45)
+    # v = 64.56Начальная скорость (м/с):
+
+    # a = (v * sin(α)) / t,
+    # t = (2 * v * sin(α)) / g
+    # a = (v * sin(α)) / (2 * v * sin(α)) / g
+    # a = 54.93433154392269 / 109.86866308784538 / 9.80665
+    # a = 0.050985810648896415
+
     cat1 = abs(image_w / 2 - w)
-    # cat2 = 300 + image_h - h
     cat2 = 300 + h
+    # cat2 = 300 + h
 
     # 340 = 2
     # 200 / 340
@@ -116,7 +145,9 @@ def shoot_calc(h, w, image_w, image_h):
     # force = (340 / sqrt(cat1 ** 2 + cat2 ** 2)) / 0.5
     force = sqrt(cat1 ** 2 + cat2 ** 2) / 170
 
-    angle = atan(cat1 / cat2) * 180 / 3.1415926535898
+    # angle = atan(cat1 / cat2) * 180 / 3.1415926535898
+    angle = atan(cat2 / cat1)
+    print(cat1, cat2, angle)
 
     return {
         'angleHorizontal': '{:.6f}'.format(-angle if w < image_w / 2 else angle),
@@ -208,6 +239,7 @@ def main():
                 coords[i]['positions']['h'], coords[i]['positions']['w'],  len(image), len(image[0]))
             shoot_data[f'colors[{min_color}]'] = 1
 
+            # continue
             shoot = api.shoot(shoot_data)
             pprint(shoot_data)
             pprint(shoot)
