@@ -118,14 +118,14 @@ def shoot_calc(h, w, image_w, image_h):
     # 425 = 2 v^2 * 0.8509035245341184 * 0.5253219888177297 / 9.80665
     # 4167.82625 = 2 v^2 * 0.8509035245341184 * 0.5253219888177297
     # 4662.0154411025915 = v^2
-    # 
+    #
     # F = ma = m (v^2 - u^2) / (2s)
     # F = 1 (v^2) / 2s
     # F = 4662.0154411025915 / 850
     # F = 5.48472404835599
-    # 
-    # 
-    # 
+    #
+    #
+    #
     # s = (v^2 /g) * sin(2 * 45)
     # v = 64.56Начальная скорость (м/с):
 
@@ -157,6 +157,8 @@ def shoot_calc(h, w, image_w, image_h):
 
 
 image = load_image()
+sended_image = [[Color((255, 255, 255)) for w in range(len(image[0]))]
+                for h in range(len(image))]
 
 
 def main():
@@ -211,7 +213,8 @@ def main():
             pprint(shoot_data)
             pprint(shoot)
             if (shoot['status'] == 200):
-                i = i + 1
+                sended_image[coords[i]['positions']
+                             ['h']][coords[i]['positions']['w']] = Color(unpack_rgb(min_color))
 
             sleep_time = shoot['info']['ns'] / (10 ** 9)
             print(colored(f'sleep {sleep_time}s', 'blue'))
@@ -244,13 +247,15 @@ def main():
             pprint(shoot_data)
             pprint(shoot)
             if (shoot['status'] == 200):
-                i = i + 1
+                sended_image[coords[i]['positions']
+                             ['h']][coords[i]['positions']['w']] = Color(unpack_rgb(min_color))
 
             sleep_time = shoot['info']['ns'] / (10 ** 9)
             print(colored(f'sleep {sleep_time}s', 'blue'))
             if (sleep_time > 0):
                 sleep(sleep_time)
-    # # pprint(new_colors, indent=2)
+
+    save_image(sended_image, 'sanded')
 
 
 for i in range(100):
